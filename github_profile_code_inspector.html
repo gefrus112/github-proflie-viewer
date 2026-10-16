@@ -1,0 +1,1111 @@
+DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Profile, Takedown & Code Inspector</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.g<!oogleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            gh: {
+              bg: '#090d16',
+              card: '#121824',
+              cardBorder: 'rgba(255, 255, 255, 0.08)',
+              border: '#283042',
+              accent: '#10b981',
+              accentHover: '#059669',
+              blue: '#38bdf8',
+              cyan: '#22d3ee',
+              purple: '#c084fc',
+              pink: '#f472b6',
+              amber: '#fbbf24',
+              red: '#f87171',
+              text: '#cbd5e1',
+              muted: '#64748b'
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 20s linear infinite',
+            'pulse-glow': 'pulseGlow 4s ease-in-out infinite alternate',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%': { opacity: '0.4', transform: 'scale(1)' },
+              '100%': { opacity: '0.8', transform: 'scale(1.1)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080c14;
+      color: #cbd5e1;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080c14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Glassmorphism utility */
+    .glass-panel {
+      background: rgba(18, 24, 36, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-header {
+      background: rgba(12, 17, 28, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Glowing ambient lights */
+    .neon-orb-1 {
+      position: fixed;
+      top: -10%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .neon-orb-2 {
+      position: fixed;
+      bottom: -10%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(192, 132, 252, 0.12) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hover-glow:hover {
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gh-blue selection:text-gh-bg relative">
+
+  <!-- Ambient Ambient Neon Light Orbs -->
+  <div class="neon-orb-1 animate-pulse-glow"></div>
+  <div class="neon-orb-2 animate-pulse-glow" style="animation-delay: 2s;"></div>
+
+  <!-- Header -->
+  <header class="glass-header sticky top-0 z-30 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 relative z-10">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="loadUserProfile('torvalds')">
+        <div class="p-2 bg-gradient-to-tr from-gh-blue/20 to-gh-purple/20 border border-gh-blue/30 rounded-xl text-gh-blue animate-float">
+          <i class="fa-brands fa-github text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg text-white tracking-tight flex items-center gap-2">
+            GitHub Inspector
+            <span class="text-[10px] bg-gradient-to-r from-gh-blue/20 to-gh-purple/20 text-gh-blue px-2 py-0.5 rounded-full border border-gh-blue/30 font-mono uppercase tracking-wider">Pro Edition</span>
+          </h1>
+          <p class="text-xs text-gh-muted hidden sm:block">Profiles, Live Code & Archival DMCA Analysis</p>
+        </div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="flex items-center gap-3">
+        <button id="open-vs-btn" onclick="toggleVsModal(true)" class="flex items-center gap-2 px-3.5 py-1.5 bg-gh-purple/10 border border-gh-purple/30 hover:border-gh-purple text-gh-purple rounded-xl text-xs font-semibold transition-all hover:shadow-lg hover:shadow-purple-950/40 active:scale-95">
+          <i class="fa-solid fa-swords"></i>
+          <span>Dev VS Dev</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Search Section -->
+  <section class="relative z-10 py-10 px-4">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-gh-blue">
+        Inspect Any GitHub Developer
+      </h2>
+      <p class="text-gh-muted text-sm sm:text-base mb-6 max-w-xl mx-auto">
+        Search by username or GitHub URL to browse source code, track DMCA takedown logs, and compare developer stats.
+      </p>
+      
+      <!-- Search Form Input -->
+      <form id="search-form" class="relative flex items-center max-w-xl mx-auto">
+        <div class="relative w-full">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gh-muted text-sm"></i>
+          <input 
+            type="text" 
+            id="username-input"
+            placeholder="Username or URL (e.g. torvalds or github.com/sindresorhus)" 
+            class="w-full pl-11 pr-28 py-3.5 bg-gh-bg/80 border border-gh-border rounded-2xl text-white placeholder-gh-muted focus:outline-none focus:border-gh-blue focus:ring-2 focus:ring-gh-blue/20 transition-all font-mono text-sm glass-panel"
+            required
+            autocomplete="off"
+          />
+          <button 
+            type="submit" 
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-950/50 flex items-center gap-1.5 active:scale-95"
+          >
+            <span>Inspect</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Quick Search Handles -->
+      <div class="flex items-center justify-center flex-wrap gap-2 mt-4 text-xs text-gh-muted">
+        <span>Quick View:</span>
+        <button onclick="loadUserProfile('torvalds')" class="hover:text-gh-blue font-mono underline decoration-gh-blue/40">torvalds</button>•
+        <button onclick="loadUserProfile('gaearon')" class="hover:text-gh-blue font-mono underline decoration-gh-blue/40">gaearon</button>•
+        <button onclick="loadUserProfile('sindresorhus')" class="hover:text-gh-blue font-mono underline decoration-gh-blue/40">sindresorhus</button>•
+        <button onclick="loadUserProfile('yyx990803')" class="hover:text-gh-blue font-mono underline decoration-gh-blue/40">yyx990803</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alert Banner -->
+  <div id="alert-box" class="hidden max-w-7xl mx-auto px-4 my-2 relative z-10">
+    <div id="alert-content" class="p-4 rounded-2xl border flex items-start gap-3 text-sm glass-panel">
+      <i id="alert-icon" class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
+      <div class="flex-1">
+        <p id="alert-message" class="font-semibold"></p>
+        <p id="alert-sub" class="text-xs opacity-80 mt-0.5"></p>
+      </div>
+      <button onclick="hideAlert()" class="text-gh-muted hover:text-white p-1"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loading-state" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative z-10">
+    <div class="animate-pulse grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="space-y-4">
+        <div class="w-32 h-32 bg-gh-card/60 rounded-full mx-auto lg:mx-0 border border-gh-border"></div>
+        <div class="h-6 bg-gh-card/60 rounded-xl w-3/4"></div>
+        <div class="h-4 bg-gh-card/60 rounded-xl w-1/2"></div>
+        <div class="h-20 bg-gh-card/60 rounded-xl"></div>
+      </div>
+      <div class="lg:col-span-3 space-y-6">
+        <div class="h-10 bg-gh-card/60 rounded-xl w-full"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="h-36 bg-gh-card/60 rounded-2xl border border-gh-border"></div>
+          <div class="h-36 bg-gh-card/60 rounded-2xl border border-gh-border"></div>
+          <div class="h-36 bg-gh-card/60 rounded-2xl border border-gh-border"></div>
+          <div class="h-36 bg-gh-card/60 rounded-2xl border border-gh-border"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Container -->
+  <main id="dashboard" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- User Profile Sidebar -->
+      <aside class="lg:col-span-1 space-y-6">
+        <div class="glass-panel rounded-3xl p-6 text-center lg:text-left shadow-2xl relative overflow-hidden group">
+          
+          <!-- Avatar -->
+          <div class="relative inline-block lg:block mb-4">
+            <img 
+              id="user-avatar" 
+              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80" 
+              alt="Avatar" 
+              class="w-36 h-36 sm:w-40 sm:h-40 rounded-full border-2 border-gh-blue/30 mx-auto lg:mx-0 object-cover shadow-2xl transition-transform group-hover:scale-105"
+            />
+            <a id="github-link" href="#" target="_blank" class="absolute bottom-2 right-2 lg:right-auto lg:left-32 bg-gh-bg border border-gh-border p-2.5 rounded-full text-gh-text hover:text-white hover:border-gh-blue transition-colors shadow-lg">
+              <i class="fa-brands fa-github text-sm"></i>
+            </a>
+          </div>
+
+          <!-- Names & Bio -->
+          <h2 id="user-name" class="text-2xl font-bold text-white tracking-tight">--</h2>
+          <p id="user-login" class="text-gh-blue font-mono text-sm mb-3">@--</p>
+          <p id="user-bio" class="text-xs text-gh-text leading-relaxed mb-4">--</p>
+
+          <hr class="border-gh-border/50 my-4" />
+
+          <!-- Meta Data -->
+          <div class="space-y-2.5 text-xs text-gh-muted">
+            <div id="meta-company-box" class="flex items-center gap-2.5">
+              <i class="fa-solid fa-building text-gh-muted w-4"></i>
+              <span id="user-company" class="truncate">Not specified</span>
+            </div>
+            <div id="meta-location-box" class="flex items-center gap-2.5">
+              <i class="fa-solid fa-location-dot text-gh-muted w-4"></i>
+              <span id="user-location" class="truncate">Not specified</span>
+            </div>
+            <div id="meta-blog-box" class="flex items-center gap-2.5">
+              <i class="fa-solid fa-link text-gh-muted w-4"></i>
+              <a id="user-blog" href="#" target="_blank" class="hover:text-gh-blue truncate underline">Not specified</a>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i class="fa-solid fa-calendar-days text-gh-muted w-4"></i>
+              <span>Joined <span id="user-joined">--</span></span>
+            </div>
+          </div>
+
+          <!-- Total Calculated Stars & Stats -->
+          <div class="grid grid-cols-3 gap-2 mt-6 pt-4 border-t border-gh-border/50 text-center">
+            <div class="bg-gh-bg/60 p-2.5 rounded-xl border border-gh-border/40">
+              <span class="block text-[10px] uppercase tracking-wider text-gh-muted font-semibold">Repos</span>
+              <span id="stat-repos" class="text-sm font-bold text-white font-mono">0</span>
+            </div>
+            <div class="bg-gh-bg/60 p-2.5 rounded-xl border border-gh-border/40">
+              <span class="block text-[10px] uppercase tracking-wider text-gh-muted font-semibold">Followers</span>
+              <span id="stat-followers" class="text-sm font-bold text-white font-mono">0</span>
+            </div>
+            <div class="bg-gh-bg/60 p-2.5 rounded-xl border border-gh-border/40">
+              <span class="block text-[10px] uppercase tracking-wider text-gh-amber font-semibold">Est. Stars</span>
+              <span id="stat-stars" class="text-sm font-bold text-gh-amber font-mono">0</span>
+            </div>
+          </div>
+
+          <!-- Battle Launcher Button -->
+          <button onclick="openVsWithCurrentUser()" class="w-full mt-5 py-2.5 px-3 bg-gradient-to-r from-gh-purple/20 to-indigo-900/20 hover:from-gh-purple/30 hover:to-indigo-900/30 border border-gh-purple/30 text-gh-purple text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-swords"></i>
+            Compare Developer
+          </button>
+
+        </div>
+      </aside>
+
+      <!-- Main Section Tabs -->
+      <section class="lg:col-span-3 space-y-6">
+        
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gh-border/60 flex items-center gap-6 text-sm font-medium overflow-x-auto pb-1">
+          <button id="tab-repos-btn" onclick="switchTab('repos')" class="pb-3 border-b-2 border-gh-blue text-gh-blue flex items-center gap-2 font-bold whitespace-nowrap">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <span>Overview & Repos</span>
+            <span id="tab-count-repos" class="bg-gh-border text-gh-text text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+          </button>
+          
+          <button id="tab-followers-btn" onclick="switchTab('followers')" class="pb-3 border-b-2 border-transparent text-gh-muted hover:text-white flex items-center gap-2 font-bold transition-colors whitespace-nowrap">
+            <i class="fa-solid fa-users"></i>
+            <span>Followers & Following</span>
+            <span id="tab-count-followers" class="bg-gh-border text-gh-text text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+          </button>
+
+          <button id="tab-takedown-btn" onclick="switchTab('takedown')" class="pb-3 border-b-2 border-transparent text-gh-muted hover:text-white flex items-center gap-2 font-bold transition-colors whitespace-nowrap">
+            <i class="fa-solid fa-shield-halved text-gh-red"></i>
+            <span>DMCA & Archival Logs</span>
+            <span id="tab-count-dmca" class="bg-gh-red/20 text-gh-red border border-gh-red/30 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW & REPOS -->
+        <div id="tab-content-repos" class="space-y-4">
+          <!-- Filters & Sorting -->
+          <div class="flex flex-col sm:flex-row gap-3 justify-between items-center glass-panel p-3.5 rounded-2xl">
+            <div class="relative w-full sm:w-72">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gh-muted text-xs"></i>
+              <input 
+                type="text" 
+                id="repo-search" 
+                placeholder="Filter repositories..." 
+                oninput="renderRepositories()"
+                class="w-full pl-9 pr-3 py-1.5 bg-gh-bg/80 border border-gh-border rounded-xl text-xs text-white placeholder-gh-muted focus:outline-none focus:border-gh-blue font-mono"
+              />
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end text-xs">
+              <label for="repo-sort" class="text-gh-muted whitespace-nowrap font-medium">Sort:</label>
+              <select 
+                id="repo-sort" 
+                onchange="renderRepositories()"
+                class="bg-gh-bg border border-gh-border rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-gh-blue font-sans text-xs"
+              >
+                <option value="stars">Stars (High to Low)</option>
+                <option value="updated">Recently Updated</option>
+                <option value="forks">Forks</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Repos Grid -->
+          <div id="repos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic Repo Cards -->
+          </div>
+
+          <!-- Empty Notice -->
+          <div id="repos-empty" class="hidden text-center py-12 glass-panel rounded-2xl">
+            <i class="fa-solid fa-folder-open text-4xl text-gh-muted mb-3"></i>
+            <p class="text-white font-medium">No matching repositories found</p>
+          </div>
+        </div>
+
+        <!-- TAB 2: NETWORK (FOLLOWERS & FOLLOWING) -->
+        <div id="tab-content-followers" class="hidden space-y-6">
+          <div>
+            <h3 class="text-xs uppercase font-bold text-gh-muted tracking-wider mb-3">Recent Followers</h3>
+            <div id="followers-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+            <div id="followers-empty" class="hidden text-center py-8 glass-panel rounded-2xl text-xs text-gh-muted">No public followers data.</div>
+          </div>
+
+          <div>
+            <h3 class="text-xs uppercase font-bold text-gh-muted tracking-wider mb-3">Following Developers</h3>
+            <div id="following-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+            <div id="following-empty" class="hidden text-center py-8 glass-panel rounded-2xl text-xs text-gh-muted">Not following anyone publicly.</div>
+          </div>
+        </div>
+
+        <!-- TAB 3: TAKEDOWN & DMCA INSPECTOR -->
+        <div id="tab-content-takedown" class="hidden space-y-4">
+          <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-gh-red">
+            <div class="flex items-center gap-3 mb-2">
+              <i class="fa-solid fa-shield-exclamation text-gh-red text-xl"></i>
+              <h3 class="text-sm font-bold text-white">DMCA & Copyright Takedown Scanner</h3>
+            </div>
+            <p class="text-xs text-gh-muted leading-relaxed">
+              Scans GitHub's public DMCA notice archives and evaluates public repository network histories for copyright claims, removed repositories, or survived fork mirrors.
+            </p>
+          </div>
+
+          <!-- DMCA Records Grid -->
+          <div id="takedown-records-grid" class="space-y-3">
+            <!-- Dynamic DMCA Logs Rendered Here -->
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- SOURCE CODE INSPECTOR MODAL -->
+  <div id="code-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="glass-panel rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-gh-border">
+      
+      <!-- Modal Header Bar -->
+      <div class="p-4 border-b border-gh-border flex items-center justify-between bg-gh-bg/90">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="p-2 bg-gh-blue/10 text-gh-blue rounded-xl border border-gh-blue/20">
+            <i class="fa-solid fa-code text-sm"></i>
+          </div>
+          <div class="truncate">
+            <h3 id="modal-repo-name" class="text-sm font-bold text-white truncate font-mono">--</h3>
+            <div id="breadcrumb-container" class="flex items-center gap-1.5 text-xs text-gh-muted font-mono truncate">
+              <!-- Breadcrumbs injected here -->
+            </div>
+          </div>
+        </div>
+        <button onclick="toggleCodeModal(false)" class="text-gh-muted hover:text-white p-2 rounded-xl hover:bg-gh-card">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Split: Directory Tree + File Viewer -->
+      <div class="flex-1 grid grid-cols-1 md:grid-cols-3 overflow-hidden bg-gh-bg/50">
+        
+        <!-- Left: File Directory Tree -->
+        <div class="border-r border-gh-border overflow-y-auto p-3 space-y-1 font-mono text-xs max-h-[30vh] md:max-h-none">
+          <div class="text-[10px] uppercase font-bold text-gh-muted px-2 py-1 tracking-wider">Repository Files</div>
+          <div id="directory-tree-list" class="space-y-0.5">
+            <!-- File tree items -->
+          </div>
+        </div>
+
+        <!-- Right: Source Code Display -->
+        <div class="md:col-span-2 flex flex-col h-full bg-[#05080f] overflow-hidden">
+          <!-- File Toolbar -->
+          <div class="p-2.5 border-b border-gh-border/60 flex items-center justify-between bg-gh-card/40 text-xs">
+            <span id="active-file-title" class="font-mono text-gh-blue font-semibold truncate">Select a file to inspect</span>
+            <button id="copy-code-btn" onclick="copySourceCode()" class="px-2.5 py-1 bg-gh-card hover:bg-gh-border border border-gh-border text-gh-muted hover:text-white rounded-lg text-[11px] transition-colors flex items-center gap-1.5 font-mono">
+              <i class="fa-regular fa-copy"></i>
+              <span>Copy Code</span>
+            </button>
+          </div>
+
+          <!-- Code Viewer Content -->
+          <div id="code-viewer-container" class="flex-1 overflow-auto p-4 font-mono text-xs leading-relaxed text-slate-300">
+            <pre id="code-display" class="whitespace-pre-wrap break-words"><code>// Click any file in the directory sidebar to inspect raw source code live from GitHub API.</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DEV VS DEV BATTLE MODAL -->
+  <div id="vs-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      
+      <div class="p-5 border-b border-gh-border flex items-center justify-between sticky top-0 bg-gh-card/90 backdrop-blur-xl z-10">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-gh-purple/10 border border-gh-purple/30 rounded-xl text-gh-purple">
+            <i class="fa-solid fa-swords text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Developer Battle Mode</h3>
+            <p class="text-xs text-gh-muted">Side-by-side metric analytics</p>
+          </div>
+        </div>
+        <button onclick="toggleVsModal(false)" class="text-gh-muted hover:text-white p-2 rounded-xl">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <form id="vs-form" onsubmit="handleVsSearch(event)" class="grid grid-cols-1 md:grid-cols-11 gap-3 items-center">
+          <div class="md:col-span-5">
+            <label for="vs-user1" class="block text-xs text-gh-muted mb-1 font-medium">Developer 1</label>
+            <input type="text" id="vs-user1" placeholder="e.g. torvalds" class="w-full px-3.5 py-2 bg-gh-bg border border-gh-border rounded-xl text-xs text-white placeholder-gh-muted focus:outline-none focus:border-gh-purple font-mono" required />
+          </div>
+          <div class="md:col-span-1 text-center font-extrabold text-gh-purple text-sm my-1 md:my-0">VS</div>
+          <div class="md:col-span-5">
+            <label for="vs-user2" class="block text-xs text-gh-muted mb-1 font-medium">Developer 2</label>
+            <input type="text" id="vs-user2" placeholder="e.g. gaearon" class="w-full px-3.5 py-2 bg-gh-bg border border-gh-border rounded-xl text-xs text-white placeholder-gh-muted focus:outline-none focus:border-gh-purple font-mono" required />
+          </div>
+          <div class="md:col-span-11 mt-2">
+            <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-gh-purple to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-purple-950/50">
+              Execute Battle Stats
+            </button>
+          </div>
+        </form>
+
+        <div id="vs-loading" class="hidden text-center py-8">
+          <i class="fa-solid fa-circle-notch fa-spin text-3xl text-gh-purple mb-2"></i>
+          <p class="text-xs text-gh-muted">Parsing API battle records...</p>
+        </div>
+
+        <div id="vs-results" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          
+          <!-- Dev 1 -->
+          <div id="vs-card-1" class="bg-gh-bg/80 border border-gh-border rounded-2xl p-5 space-y-4">
+            <div class="flex items-center gap-3">
+              <img id="vs-avatar-1" src="" class="w-12 h-12 rounded-full border border-gh-border object-cover" />
+              <div>
+                <h4 id="vs-name-1" class="font-bold text-white text-sm"></h4>
+                <p id="vs-login-1" class="text-xs text-gh-blue font-mono"></p>
+              </div>
+            </div>
+            <hr class="border-gh-border/60" />
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Followers</span>
+                <span id="vs-followers-1" class="font-bold font-mono text-white"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Public Repos</span>
+                <span id="vs-repos-1" class="font-bold font-mono text-white"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Estimated Stars</span>
+                <span id="vs-stars-1" class="font-bold font-mono text-gh-amber"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Account Age</span>
+                <span id="vs-age-1" class="font-bold font-mono text-white"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dev 2 -->
+          <div id="vs-card-2" class="bg-gh-bg/80 border border-gh-border rounded-2xl p-5 space-y-4">
+            <div class="flex items-center gap-3">
+              <img id="vs-avatar-2" src="" class="w-12 h-12 rounded-full border border-gh-border object-cover" />
+              <div>
+                <h4 id="vs-name-2" class="font-bold text-white text-sm"></h4>
+                <p id="vs-login-2" class="text-xs text-gh-blue font-mono"></p>
+              </div>
+            </div>
+            <hr class="border-gh-border/60" />
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Followers</span>
+                <span id="vs-followers-2" class="font-bold font-mono text-white"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Public Repos</span>
+                <span id="vs-repos-2" class="font-bold font-mono text-white"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Estimated Stars</span>
+                <span id="vs-stars-2" class="font-bold font-mono text-gh-amber"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gh-muted">Account Age</span>
+                <span id="vs-age-2" class="font-bold font-mono text-white"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-gh-border/60 glass-header py-6 text-center text-xs text-gh-muted mt-12 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Built for developer analytics, live code browsing & DMCA archival tracking.</p>
+      <div class="flex items-center gap-4">
+        <button onclick="loadUserProfile('octocat')" class="hover:text-white transition-colors">Octocat Profile</button>
+        <a href="https://docs.github.com/en/rest" target="_blank" class="hover:text-white transition-colors">GitHub API Specs</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script>
+    const LANGUAGE_COLORS = {
+      JavaScript: '#f1e05a',
+      TypeScript: '#3178c6',
+      Python: '#3572A5',
+      HTML: '#e34c26',
+      CSS: '#563d7c',
+      Vue: '#41b883',
+      React: '#61dafb',
+      Rust: '#dea584',
+      Go: '#00ADD8',
+      C: '#555555',
+      'C++': '#f34b7d',
+      'C#': '#178600',
+      Java: '#b07219',
+      PHP: '#4F5D95',
+      Ruby: '#701516',
+      Swift: '#F05138',
+      Kotlin: '#A97BFF',
+      Dart: '#00B4AB',
+      Shell: '#89e051'
+    };
+
+    let currentProfile = null;
+    let repositoriesData = [];
+    let followersData = [];
+    let followingData = [];
+    let dmcaNoticeLogs = [];
+    let activeRepoForCode = null;
+    let currentFolderPath = '';
+
+    window.onload = function() {
+      loadUserProfile('torvalds');
+
+      document.getElementById('search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const raw = document.getElementById('username-input').value;
+        const username = parseUsername(raw);
+        if (username) {
+          loadUserProfile(username);
+        } else {
+          showAlert('Invalid Input', 'Please enter a valid GitHub username or URL.');
+        }
+      });
+    };
+
+    function parseUsername(input) {
+      if (!input) return '';
+      let clean = input.trim();
+      if (clean.includes('github.com/')) {
+        const parts = clean.split('github.com/')[1].split('/')[0].split('?')[0];
+        return parts.trim();
+      }
+      return clean.replace(/^@/, '');
+    }
+
+    async function loadUserProfile(username) {
+      showLoading(true);
+      hideAlert();
+
+      try {
+        const userRes = await fetch(`https://api.github.com/users/${username}`);
+        if (userRes.status === 404) throw new Error(`User "${username}" was not found.`);
+        if (userRes.status === 403) throw new Error('GitHub API rate limit hit. Please wait a moment.');
+        if (!userRes.ok) throw new Error('Failed to fetch profile.');
+
+        const userData = await userRes.json();
+        currentProfile = userData;
+
+        const [reposRes, followersRes, followingRes, dmcaRes] = await Promise.all([
+          fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`),
+          fetch(`https://api.github.com/users/${username}/followers?per_page=30`),
+          fetch(`https://api.github.com/users/${username}/following?per_page=30`),
+          fetch(`https://api.github.com/search/code?q=user:github+path:2024+${username}`)
+        ]);
+
+        repositoriesData = reposRes.ok ? await reposRes.json() : [];
+        followersData = followersRes.ok ? await followersRes.json() : [];
+        followingData = followingRes.ok ? await followingRes.json() : [];
+        
+        let dmcaData = dmcaRes.ok ? await dmcaRes.json() : { items: [] };
+        dmcaNoticeLogs = dmcaData.items || [];
+
+        renderProfileCard(userData);
+        renderRepositories();
+        renderNetworkData();
+        renderTakedowns();
+
+        switchTab('repos');
+
+      } catch (err) {
+        showAlert('Search Error', err.message);
+      } fontFinally: {
+        showLoading(false);
+      }
+    }
+
+    function renderProfileCard(user) {
+      document.getElementById('user-avatar').src = user.avatar_url;
+      document.getElementById('user-name').textContent = user.name || user.login;
+      document.getElementById('user-login').textContent = `@${user.login}`;
+      document.getElementById('user-bio').textContent = user.bio || 'No public bio provided.';
+      document.getElementById('github-link').href = user.html_url;
+
+      document.getElementById('user-company').textContent = user.company || 'Not specified';
+      document.getElementById('user-location').textContent = user.location || 'Not specified';
+      
+      const blogEl = document.getElementById('user-blog');
+      if (user.blog) {
+        blogEl.textContent = user.blog;
+        blogEl.href = user.blog.startsWith('http') ? user.blog : `https://${user.blog}`;
+        blogEl.classList.remove('pointer-events-none', 'text-gh-muted');
+      } else {
+        blogEl.textContent = 'Not specified';
+        blogEl.removeAttribute('href');
+        blogEl.classList.add('pointer-events-none', 'text-gh-muted');
+      }
+
+      const joined = new Date(user.created_at);
+      document.getElementById('user-joined').textContent = joined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+      const totalStars = repositoriesData.reduce((acc, r) => acc + (r.stargazers_count || 0), 0);
+      document.getElementById('stat-repos').textContent = user.public_repos;
+      document.getElementById('stat-followers').textContent = formatNumber(user.followers);
+      document.getElementById('stat-stars').textContent = formatNumber(totalStars);
+
+      document.getElementById('tab-count-repos').textContent = user.public_repos;
+      document.getElementById('tab-count-followers').textContent = formatNumber(user.followers);
+      document.getElementById('tab-count-dmca').textContent = dmcaNoticeLogs.length;
+    }
+
+    function renderRepositories() {
+      const grid = document.getElementById('repos-grid');
+      const emptyState = document.getElementById('repos-empty');
+      const query = document.getElementById('repo-search').value.toLowerCase().trim();
+      const sortBy = document.getElementById('repo-sort').value;
+
+      grid.innerHTML = '';
+
+      let filtered = repositoriesData.filter(repo => {
+        return repo.name.toLowerCase().includes(query) || (repo.description && repo.description.toLowerCase().includes(query));
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === 'stars') return b.stargazers_count - a.stargazers_count;
+        if (sortBy === 'forks') return b.forks_count - a.forks_count;
+        if (sortBy === 'name') return a.name.localeCompare(b.name);
+        if (sortBy === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      filtered.forEach(repo => {
+        const langColor = LANGUAGE_COLORS[repo.language] || '#64748b';
+        const isFork = repo.fork;
+
+        const card = document.createElement('div');
+        card.className = 'glass-panel rounded-2xl p-4 flex flex-col justify-between hover-glow transition-all group';
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <a href="${repo.html_url}" target="_blank" class="font-bold text-gh-blue hover:underline text-sm truncate flex items-center gap-1.5 font-mono">
+                <i class="fa-regular fa-bookmark text-xs text-gh-muted group-hover:text-gh-blue"></i>
+                <span class="truncate">${escapeHTML(repo.name)}</span>
+              </a>
+              <div class="flex items-center gap-1">
+                ${isFork ? `<span class="text-[9px] bg-purple-950/50 text-gh-purple border border-gh-purple/30 px-2 py-0.5 rounded-full font-mono">FORK</span>` : ''}
+                <span class="text-[9px] text-gh-muted border border-gh-border px-2 py-0.5 rounded-full font-mono uppercase">${repo.visibility || 'public'}</span>
+              </div>
+            </div>
+            <p class="text-xs text-gh-text line-clamp-2 mb-4 leading-relaxed">${escapeHTML(repo.description || 'No description provided.')}</p>
+          </div>
+
+          <div class="space-y-3 pt-3 border-t border-gh-border/50">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <div class="flex items-center gap-3 text-gh-muted">
+                ${repo.language ? `
+                  <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" style="background-color: ${langColor}"></span>
+                    <span>${repo.language}</span>
+                  </span>
+                ` : ''}
+                <span class="flex items-center gap-1">
+                  <i class="fa-regular fa-star text-gh-amber"></i>
+                  <span>${formatNumber(repo.stargazers_count)}</span>
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-code-fork"></i>
+                  <span>${formatNumber(repo.forks_count)}</span>
+                </span>
+              </div>
+
+              <!-- Inspect Source Button -->
+              <button onclick="openCodeInspector('${repo.owner.login}', '${repo.name}')" class="px-2.5 py-1 bg-gh-blue/10 hover:bg-gh-blue/20 border border-gh-blue/30 text-gh-blue rounded-lg text-[11px] font-semibold transition-colors flex items-center gap-1">
+                <i class="fa-solid fa-code"></i>
+                <span>Inspect</span>
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderNetworkData() {
+      const followersGrid = document.getElementById('followers-grid');
+      const followingGrid = document.getElementById('following-grid');
+
+      followersGrid.innerHTML = '';
+      followingGrid.innerHTML = '';
+
+      if (followersData.length === 0) document.getElementById('followers-empty').classList.remove('hidden');
+      else {
+        document.getElementById('followers-empty').classList.add('hidden');
+        followersData.forEach(user => followersGrid.appendChild(createMiniUserCard(user)));
+      }
+
+      if (followingData.length === 0) document.getElementById('following-empty').classList.remove('hidden');
+      else {
+        document.getElementById('following-empty').classList.add('hidden');
+        followingData.forEach(user => followingGrid.appendChild(createMiniUserCard(user)));
+      }
+    }
+
+    function createMiniUserCard(user) {
+      const div = document.createElement('div');
+      div.className = 'glass-panel rounded-xl p-3 flex items-center justify-between hover:border-gh-blue transition-all cursor-pointer group';
+      div.onclick = () => loadUserProfile(user.login);
+
+      div.innerHTML = `
+        <div class="flex items-center gap-3 overflow-hidden">
+          <img src="${user.avatar_url}" class="w-8 h-8 rounded-full border border-gh-border object-cover" />
+          <span class="text-xs font-bold font-mono text-white group-hover:text-gh-blue truncate">@${escapeHTML(user.login)}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs text-gh-muted group-hover:text-white"></i>
+      `;
+      return div;
+    }
+
+    function renderTakedowns() {
+      const container = document.getElementById('takedown-records-grid');
+      container.innerHTML = '';
+
+      if (dmcaNoticeLogs.length === 0) {
+        container.innerHTML = `
+          <div class="glass-panel p-8 text-center rounded-2xl">
+            <i class="fa-solid fa-shield-check text-3xl text-emerald-400 mb-2"></i>
+            <p class="text-sm font-semibold text-white">No Public DMCA Notices Filed</p>
+            <p class="text-xs text-gh-muted mt-1">No direct copyright takedown logs were indexed in GitHub's official repository claims for this user.</p>
+          </div>
+        `;
+        return;
+      }
+
+      dmcaNoticeLogs.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'glass-panel p-4 rounded-xl border-l-4 border-l-gh-red flex items-start justify-between gap-4';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold text-white font-mono">${escapeHTML(item.name)}</span>
+              <span class="text-[10px] bg-red-950/60 text-gh-red border border-gh-red/30 px-2 py-0.5 rounded-full font-mono">DMCA NOTICE</span>
+            </div>
+            <p class="text-xs text-gh-muted font-mono truncate max-w-md">${escapeHTML(item.path)}</p>
+          </div>
+          <a href="${item.html_url}" target="_blank" class="px-3 py-1 bg-gh-bg hover:bg-gh-border border border-gh-border text-xs text-gh-text rounded-lg flex items-center gap-1 font-mono">
+            <span>View DMCA Filing</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- CODE INSPECTOR MODAL LOGIC ---
+    async function openCodeInspector(owner, repo, path = '') {
+      activeRepoForCode = { owner, repo };
+      currentFolderPath = path;
+
+      document.getElementById('modal-repo-name').textContent = `${owner}/${repo}`;
+      toggleCodeModal(true);
+
+      updateBreadcrumbs(path);
+      await loadDirectoryTree(owner, repo, path);
+    }
+
+    function updateBreadcrumbs(path) {
+      const container = document.getElementById('breadcrumb-container');
+      container.innerHTML = `<button onclick="openCodeInspector('${activeRepoForCode.owner}', '${activeRepoForCode.repo}', '')" class="hover:underline text-gh-blue">root</button>`;
+
+      if (!path) return;
+
+      const parts = path.split('/');
+      let accumulated = '';
+      parts.forEach(part => {
+        accumulated += (accumulated ? '/' : '') + part;
+        const currentAcc = accumulated;
+        container.innerHTML += ` / <button onclick="openCodeInspector('${activeRepoForCode.owner}', '${activeRepoForCode.repo}', '${currentAcc}')" class="hover:underline text-gh-blue">${part}</button>`;
+      });
+    }
+
+    async function loadDirectoryTree(owner, repo, path) {
+      const treeList = document.getElementById('directory-tree-list');
+      treeList.innerHTML = `<div class="text-gh-muted p-2"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading tree...</div>`;
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+        if (!res.ok) throw new Error('Unable to read directory files.');
+
+        const items = await res.json();
+        treeList.innerHTML = '';
+
+        if (Array.isArray(items)) {
+          // Sort folders first then files
+          items.sort((a, b) => (b.type === 'dir') - (a.type === 'dir'));
+
+          items.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'w-full text-left px-2 py-1.5 rounded-lg hover:bg-gh-card flex items-center gap-2 text-xs truncate transition-colors text-slate-300';
+            
+            if (item.type === 'dir') {
+              btn.innerHTML = `<i class="fa-solid fa-folder text-gh-amber text-xs"></i><span class="truncate font-semibold">${item.name}</span>`;
+              btn.onclick = () => openCodeInspector(owner, repo, item.path);
+            } else {
+              btn.innerHTML = `<i class="fa-regular fa-file-code text-gh-blue text-xs"></i><span class="truncate">${item.name}</span>`;
+              btn.onclick = () => loadFileContent(item.download_url, item.name);
+            }
+            treeList.appendChild(btn);
+          });
+        }
+      } catch (err) {
+        treeList.innerHTML = `<div class="text-gh-red p-2">${err.message}</div>`;
+      }
+    }
+
+    async function loadFileContent(downloadUrl, filename) {
+      const codeDisplay = document.getElementById('code-display');
+      const activeTitle = document.getElementById('active-file-title');
+
+      activeTitle.textContent = filename;
+      codeDisplay.textContent = '// Loading source file...';
+
+      try {
+        const res = await fetch(downloadUrl);
+        if (!res.ok) throw new Error('Failed to load raw file contents.');
+        const text = await res.text();
+        
+        // Render with line numbers
+        const lines = text.split('\n');
+        const numberedCode = lines.map((line, idx) => {
+          const num = String(idx + 1).padStart(3, ' ');
+          return `<span class="text-gh-muted select-none mr-3 opacity-50">${num}</span>${escapeHTML(line)}`;
+        }).join('\n');
+
+        codeDisplay.innerHTML = numberedCode;
+      } catch (err) {
+        codeDisplay.textContent = `// Error loading file: ${err.message}`;
+      }
+    }
+
+    function copySourceCode() {
+      const codeDisplay = document.getElementById('code-display');
+      const text = codeDisplay.innerText;
+      
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      const btn = document.getElementById('copy-code-btn');
+      btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>Copied!</span>`;
+      setTimeout(() => {
+        btn.innerHTML = `<i class="fa-regular fa-copy"></i><span>Copy Code</span>`;
+      }, 2000);
+    }
+
+    function toggleCodeModal(show) {
+      document.getElementById('code-modal').classList.toggle('hidden', !show);
+    }
+
+    // --- VS BATTLE MODAL LOGIC ---
+    function toggleVsModal(show) {
+      document.getElementById('vs-modal').classList.toggle('hidden', !show);
+    }
+
+    function openVsWithCurrentUser() {
+      if (currentProfile) {
+        document.getElementById('vs-user1').value = currentProfile.login;
+      }
+      toggleVsModal(true);
+    }
+
+    async function handleVsSearch(e) {
+      e.preventDefault();
+      const u1 = parseUsername(document.getElementById('vs-user1').value);
+      const u2 = parseUsername(document.getElementById('vs-user2').value);
+
+      if (!u1 || !u2) return;
+
+      const loading = document.getElementById('vs-loading');
+      const results = document.getElementById('vs-results');
+
+      loading.classList.remove('hidden');
+      results.classList.add('hidden');
+
+      try {
+        const [res1, res2, repos1Res, repos2Res] = await Promise.all([
+          fetch(`https://api.github.com/users/${u1}`),
+          fetch(`https://api.github.com/users/${u2}`),
+          fetch(`https://api.github.com/users/${u1}/repos?per_page=100`),
+          fetch(`https://api.github.com/users/${u2}/repos?per_page=100`)
+        ]);
+
+        if (!res1.ok || !res2.ok) throw new Error('One or both profiles could not be found.');
+
+        const data1 = await res1.json();
+        const data2 = await res2.json();
+        const repos1 = repos1Res.ok ? await repos1Res.json() : [];
+        const repos2 = repos2Res.ok ? await repos2Res.json() : [];
+
+        const stars1 = repos1.reduce((sum, r) => sum + r.stargazers_count, 0);
+        const stars2 = repos2.reduce((sum, r) => sum + r.stargazers_count, 0);
+
+        populateVsCard(1, data1, stars1);
+        populateVsCard(2, data2, stars2);
+
+        highlightVsWinner('followers', data1.followers, data2.followers);
+        highlightVsWinner('repos', data1.public_repos, data2.public_repos);
+        highlightVsWinner('stars', stars1, stars2);
+
+        results.classList.remove('hidden');
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function populateVsCard(num, data, stars) {
+      document.getElementById(`vs-avatar-${num}`).src = data.avatar_url;
+      document.getElementById(`vs-name-${num}`).textContent = data.name || data.login;
+      document.getElementById(`vs-login-${num}`).textContent = `@${data.login}`;
+      
+      document.getElementById(`vs-followers-${num}`).textContent = formatNumber(data.followers);
+      document.getElementById(`vs-repos-${num}`).textContent = formatNumber(data.public_repos);
+      document.getElementById(`vs-stars-${num}`).textContent = formatNumber(stars);
+
+      const years = new Date().getFullYear() - new Date(data.created_at).getFullYear();
+      document.getElementById(`vs-age-${num}`).textContent = `${years} yrs`;
+    }
+
+    function highlightVsWinner(statKey, val1, val2) {
+      const el1 = document.getElementById(`vs-${statKey}-1`);
+      const el2 = document.getElementById(`vs-${statKey}-2`);
+
+      el1.classList.remove('text-emerald-400');
+      el2.classList.remove('text-emerald-400');
+
+      if (val1 > val2) el1.classList.add('text-emerald-400');
+      else if (val2 > val1) el2.classList.add('text-emerald-400');
+    }
+
+    // --- UI CONTROLS ---
+    function switchTab(tabName) {
+      ['repos', 'followers', 'takedown'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}-btn`);
+        const content = document.getElementById(`tab-content-${t}`);
+
+        if (t === tabName) {
+          btn.classList.add('border-gh-blue', 'text-gh-blue');
+          btn.classList.remove('border-transparent', 'text-gh-muted');
+          content.classList.remove('hidden');
+        } else {
+          btn.classList.remove('border-gh-blue', 'text-gh-blue');
+          btn.classList.add('border-transparent', 'text-gh-muted');
+          content.classList.add('hidden');
+        }
+      });
+    }
+
+    function showLoading(isLoading) {
+      document.getElementById('loading-state').classList.toggle('hidden', !isLoading);
+      document.getElementById('dashboard').classList.toggle('opacity-30', isLoading);
+    }
+
+    function showAlert(title, message) {
+      const alertBox = document.getElementById('alert-box');
+      document.getElementById('alert-message').textContent = title;
+      document.getElementById('alert-sub').textContent = message;
+      alertBox.classList.remove('hidden');
+    }
+
+    function hideAlert() {
+      document.getElementById('alert-box').classList.add('hidden');
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+      return num || 0;
+    }
+
+    function escapeHTML(str) {
+      return (str || '').replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+</html>
